@@ -1,0 +1,8 @@
+future add on's
+add how raytracer is implemented all techinical details each module in detail
+add prism //use triangles (ask how many sides the two bases must have)
+add pyramid //use triangles (ask how many sides the base must have)
+add cylinder // think maybe similar to circle
+add common function to create (pentagon,hex,octa)//using triangles (take input how many sides)
+add diamond shape // use triangles
+add macOS support

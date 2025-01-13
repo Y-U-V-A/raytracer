@@ -1,0 +1,31 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (Windows)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/EXE.exe",
+            "args": [
+                "image.ppm"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "terminal": "integrated",
+            "stopOnEntry": false
+        },
+        {
+            "name": "Debug (Linux)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "${workspaceFolder}/bin/EXE",
+            "args": [
+                "image.ppm"
+            ],
+            "cwd": "${workspaceFolder}",
+            "console": "integratedTerminal",
+            "terminal": "integrated",
+            "stopOnEntry": false
+        },
+    ]
+}
