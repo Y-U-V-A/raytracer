@@ -519,6 +519,97 @@ void scene_lights(const char* image_name) {
     perlin_texture_destroy(tex);
 }
 
+void scene_10000_rays(const char* image_name) {
+
+    lambertian ground = lambertian_create((color){0.48, 0.83, 0.53}, 0);
+
+    int boxes_per_side = 20;
+    box** boxs = zmemory_allocate(sizeof(box*) * boxes_per_side * boxes_per_side);
+    hittable** bvh_array = darray_create(hittable*);
+
+    int idx = 0;
+    for (int i = 0; i < boxes_per_side; i++) {
+        for (int j = 0; j < boxes_per_side; j++) {
+            f64 w = 100.0;
+            f64 x0 = -1000.0 + i * w;
+            f64 z0 = -1000.0 + j * w;
+            f64 y0 = 0.0;
+            f64 x1 = x0 + w;
+            f64 y1 = random_double(1, 101);
+            f64 z1 = z0 + w;
+
+            boxs[idx] = box_create((point3){x0, y0, z0}, (point3){x1, y1, z1}, (material*)(&ground));
+            bvh_array = _darray_push_back(bvh_array, &(boxs[idx]));
+            idx++;
+        }
+    }
+
+    diffuse_light light = diffuse_light_create((color){7, 7, 7}, 0);
+    quad quad_light = quad_create((point3){123, 554, 147}, (vec3){300, 0, 0}, (vec3){0, 0, 265}, (material*)(&light));
+    darray_push_back_hittable_ptr(bvh_array, quad_light);
+
+    lambertian sphere1_material = lambertian_create((color){0.7, 0.3, 0.1}, 0);
+    dielectric sphere2_material = dielectric_create((color){1, 1, 1}, 0, 1.5);
+    metal sphere3_material = metal_create((color){0.8, 0.8, 0.9}, 0, 1.0);
+    sphere sphere1 = sphere_create((point3){400, 400, 200}, 50, (material*)(&sphere1_material));
+    sphere sphere2 = sphere_create((point3){260, 150, 45}, 50, (material*)(&sphere2_material));
+    sphere sphere3 = sphere_create((point3){0, 150, 145}, 50, (material*)(&sphere3_material));
+    darray_push_back_hittable_ptr(bvh_array, sphere1);
+    darray_push_back_hittable_ptr(bvh_array, sphere2);
+    darray_push_back_hittable_ptr(bvh_array, sphere3);
+
+    dielectric boundry_material = dielectric_create((color){1, 1, 1}, 0, 1.5);
+    sphere boundary = sphere_create((point3){360, 150, 145}, 70, (material*)(&boundry_material));
+    darray_push_back_hittable_ptr(bvh_array, boundary);
+
+    image_texture* image = image_texture_create("C:/yuva/repos/raytracer/source/assets/sky.jpg");
+    lambertian sphere4_material = lambertian_create((color){1, 1, 1}, (texture*)(image));
+    sphere sphere4 = sphere_create((point3){400, 200, 400}, 100, (material*)(&sphere4_material));
+    darray_push_back_hittable_ptr(bvh_array, sphere4);
+
+    perlin_texture* perlin = perlin_texture_create();
+    lambertian sphere5_material = lambertian_create((color){1, 1, 1}, (texture*)(perlin));
+    sphere sphere5 = sphere_create((point3){220, 280, 300}, 80, (material*)(&sphere5_material));
+    darray_push_back_hittable_ptr(bvh_array, sphere5);
+
+    int ns = 1000;
+    sphere* spheres = zmemory_allocate(sizeof(sphere) * ns);
+    hittable** mini_bvh_array = darray_create(hittable*);
+    for (int j = 0; j < ns; j++) {
+        spheres[j] = sphere_create(vec3_random(-82.5, 82.5), 10, 0);
+        darray_push_back_hittable_ptr(mini_bvh_array, spheres[j]);
+    }
+    lambertian white = lambertian_create((color){.73, .73, .73}, 0);
+    hittable* mini_bvh = bvh_create(mini_bvh_array);
+    rotate rotate_bvh = rotate_object(mini_bvh, (vec3){0, 1, 0}, DEG_TO_RAD(15), 0);
+    translate trans = translate_object((hittable*)(&rotate_bvh), (vec3){-100, 270, 395}, (material*)(&white));
+    darray_push_back_hittable_ptr(bvh_array, trans);
+
+    hittable* bvh = bvh_create(bvh_array);
+
+    hittable_list* world = hittable_list_create();
+    hittable_list_add(world, bvh);
+
+    // render
+    camera* cam = camera_create(1200, 1000);
+
+    camera_render(cam, world, image_name, 60, (vec3){478, 278, -600}, (vec3){278, 278, 0}, (vec3){0, 1, 0}, 1024, 64, background_black);
+
+    camera_destroy(cam);
+    hittable_list_destroy(world);
+    bvh_destroy(bvh);
+    zmemory_free(spheres, sizeof(sphere) * ns);
+    darray_destroy(mini_bvh_array);
+    bvh_destroy(mini_bvh);
+    perlin_texture_destroy(perlin);
+    image_texture_destroy(image);
+    darray_destroy(bvh_array);
+    for (int i = 0; i < idx; i++) {
+        box_destroy(boxs[i]);
+    }
+    zmemory_free(boxs, sizeof(box*) * boxes_per_side * boxes_per_side);
+}
+
 void scene_cornell(const char* image_name) {
 
     lambertian red = lambertian_create((color){.65, .05, .05}, 0);
@@ -572,7 +663,7 @@ void scene_cornell(const char* image_name) {
 
 void scene_render(const char* file_name) {
     // scene_three_lambertian_spheres(file_name);
-    scene_three_metal_spheres(file_name);
+    // scene_three_metal_spheres(file_name);
     // scene_three_dielectric_spheres(file_name);
     // scene_three_lambertian_quad(file_name);
     // scene_three_metal_quad(file_name);
@@ -582,6 +673,7 @@ void scene_render(const char* file_name) {
     // scene_three_dielectric_circle(file_name);
     // scene_lights(file_name);
     // scene_cornell(file_name);
+    scene_10000_rays(file_name);
 }
 
 #endif
