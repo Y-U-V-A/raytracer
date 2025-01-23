@@ -519,7 +519,7 @@ void scene_lights(const char* image_name) {
     perlin_texture_destroy(tex);
 }
 
-void scene_10000_rays(const char* image_name) {
+void scene(const char* image_name) {
 
     lambertian ground = lambertian_create((color){0.48, 0.83, 0.53}, 0);
 
@@ -593,7 +593,7 @@ void scene_10000_rays(const char* image_name) {
     // render
     camera* cam = camera_create(1200, 1000);
 
-    camera_render(cam, world, image_name, 60, (vec3){478, 278, -600}, (vec3){278, 278, 0}, (vec3){0, 1, 0}, 1024, 64, background_black);
+    camera_render(cam, world, image_name, 70, (vec3){478, 278, -600}, (vec3){278, 278, 0}, (vec3){0, 1, 0}, 200, 32, background_black);
 
     camera_destroy(cam);
     hittable_list_destroy(world);
@@ -673,7 +673,7 @@ void scene_render(const char* file_name) {
     // scene_three_dielectric_circle(file_name);
     // scene_lights(file_name);
     // scene_cornell(file_name);
-    scene_10000_rays(file_name);
+    scene(file_name);
 }
 
 #endif
