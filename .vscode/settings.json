@@ -1,7 +1,7 @@
 {
     "editor.formatOnSave": true,
     "editor.fontSize": 14,
-    "C_Cpp.default.compilerPath": "C:\\Program Files\\LLVM\\bin\\clang.exe",
+    "C_Cpp.default.compilerPath": "C:\\Users\\yuvaraj\\scoop\\apps\\llvm\\current\\bin\\clang.exe",
     "C_Cpp.default.cStandard": "c17",
     "C_Cpp.default.intelliSenseMode": "clang-x64",
     "C_Cpp.clang_format_style": "{ BasedOnStyle: LLVM, IndentWidth: 4, ColumnLimit: 0, NamespaceIndentation: All, BreakBeforeBraces: Attach, PointerAlignment: Left, IndentPPDirectives: AfterHash}",

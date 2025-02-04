@@ -16,6 +16,7 @@ endif
 #to detect platform
 ifeq ($(OS),Windows_NT)
 	PLATFORM = WINDOWS
+	SHELL = cmd.exe
 else
 	UNAME = $(shell uname)
 	ifeq ($(UNAME),Linux)
@@ -34,11 +35,11 @@ CFLAGS = -D__WIN32__
 LFLAGS = 
 #recursive remove directory function $(call RRMDIR,dir)
 define RRMDIR
-@if exist $(subst /,\$(nullstring),$(1)) rmdir /Q /S $(subst /,\$(nullstring),$(1))
+@if exist $(subst /,\,$(1)) rmdir /Q /S $(subst /,\,$(1))
 endef
 
 define MKDIR
-@if not exist $(subst /,\$(nullstring),$(1)) mkdir $(subst /,\$(nullstring),$(1))
+@if not exist $(subst /,\,$(1)) mkdir $(subst /,\,$(1))
 endef
 
 #detect the machine arch

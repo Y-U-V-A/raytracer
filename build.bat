@@ -1,5 +1,5 @@
 @echo off
-::commands
+:: build.bat
 ::./build.bat source [--mt] [--bmp] -> to generate the obj files in bin_int and exe file in bin
 ::./build.bat clear -> to delete bin_int and bin
 ::./build.bat clear_bin -> to delete bin

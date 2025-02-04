@@ -36,7 +36,7 @@ color background_white(ray* r_in) {
 
 void scene_three_lambertian_spheres(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -67,7 +67,7 @@ void scene_three_lambertian_spheres(const char* image_name) {
 
 void scene_three_metal_spheres(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -98,7 +98,7 @@ void scene_three_metal_spheres(const char* image_name) {
 
 void scene_three_dielectric_spheres(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -129,7 +129,7 @@ void scene_three_dielectric_spheres(const char* image_name) {
 
 void scene_three_lambertian_quad(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -161,7 +161,7 @@ void scene_three_lambertian_quad(const char* image_name) {
 
 void scene_three_metal_quad(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -193,7 +193,7 @@ void scene_three_metal_quad(const char* image_name) {
 
 void scene_three_dielectric_quad(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -225,7 +225,7 @@ void scene_three_dielectric_quad(const char* image_name) {
 
 void scene_three_lambertian_circle(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -257,7 +257,7 @@ void scene_three_lambertian_circle(const char* image_name) {
 
 void scene_three_metal_circle(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -289,7 +289,7 @@ void scene_three_metal_circle(const char* image_name) {
 
 void scene_three_dielectric_circle(const char* image_name) {
 
-    image_texture* image_tex = image_texture_create("C:/yuva/CG/raytracing/raytracer/source/assets/Buddha.jpg");
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
     perlin_texture* perlin_tex = perlin_texture_create();
 
     lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
@@ -662,7 +662,7 @@ void scene_cornell(const char* image_name) {
 }
 
 void scene_render(const char* file_name) {
-    // scene_three_lambertian_spheres(file_name);
+    scene_three_lambertian_spheres(file_name);
     // scene_three_metal_spheres(file_name);
     // scene_three_dielectric_spheres(file_name);
     // scene_three_lambertian_quad(file_name);
@@ -673,7 +673,7 @@ void scene_render(const char* file_name) {
     // scene_three_dielectric_circle(file_name);
     // scene_lights(file_name);
     // scene_cornell(file_name);
-    scene(file_name);
+    // scene(file_name);
 }
 
 #endif
