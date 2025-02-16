@@ -47,11 +47,7 @@ typedef struct camera_thread_params {
 
 ray generate_ray(camera* cam, i32 width, i32 height, i32 row_s, i32 col_s);
 color get_pixel_color(camera* cam, ray* r, i32 depth, hittable_list* world);
-#ifdef PLATFORM_WINDOWS
-u32 camera_thread_start_func(void* params);
-#else
-void* camera_thread_start_func(void* params);
-#endif
+zthread_func_return_type camera_thread_start_func(void* params);
 
 camera* camera_create(i32 image_width, i32 image_height) {
     if (image_height <= 0 || image_width <= 0) {
@@ -128,8 +124,6 @@ void camera_render(camera* cam, hittable_list* world, const char* file_path,
     LOGI("generating image data on single thread...");
 
     f64 pixel_sample_scale = 1.0f / (sqrt_spp * sqrt_spp);
-
-    u64 buffer_size = cam->image_height * cam->image_width * PIXEL_DATA_SIZE;
 
     for (i32 height = 0; height < cam->image_height; ++height) {
         LOG_STDOUT("\rremaning scanlines %u                      ", cam->image_height - height);
@@ -295,12 +289,7 @@ color get_pixel_color(camera* cam, ray* r, i32 depth, hittable_list* world) {
     return vec3_add(color_from_emmision, color_from_scatter);
 }
 
-#ifdef PLATFORM_WINDOWS
-u32 camera_thread_start_func(void* params)
-#else
-void* camera_thread_start_func(void* params)
-#endif
-{
+zthread_func_return_type camera_thread_start_func(void* params) {
     camera_thread_params* parameters = (camera_thread_params*)params;
 
     u64 offset = 0;

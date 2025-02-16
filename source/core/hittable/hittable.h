@@ -248,6 +248,62 @@ INLINE circle circle_create(point3 center, f64 radius, vec3 normal, material* ma
     };
 }
 
+//////////////////////////////////////////////////////////////////////////
+//                      __  __                  __                      //
+//                     /  |/  |                /  |                     //
+//   _______  __    __ $$ |$$/  _______    ____$$ |  ______    ______   //
+//  /       |/  |  /  |$$ |/  |/       \  /    $$ | /      \  /      \  //
+// /$$$$$$$/ $$ |  $$ |$$ |$$ |$$$$$$$  |/$$$$$$$ |/$$$$$$  |/$$$$$$  | //
+// $$ |      $$ |  $$ |$$ |$$ |$$ |  $$ |$$ |  $$ |$$    $$ |$$ |  $$/  //
+// $$ \_____ $$ \__$$ |$$ |$$ |$$ |  $$ |$$ \__$$ |$$$$$$$$/ $$ |       //
+// $$       |$$    $$ |$$ |$$ |$$ |  $$ |$$    $$ |$$       |$$ |       //
+//  $$$$$$$/  $$$$$$$ |$$/ $$/ $$/   $$/  $$$$$$$/  $$$$$$$/ $$/        //
+//           /  \__$$ |                                                 //
+//           $$    $$/                                                  //
+//            $$$$$$/                                                   //
+//                                                                      //
+//////////////////////////////////////////////////////////////////////////
+
+typedef struct cylinder {
+    hittable base;
+    material* mat;
+    vec3 direction;
+    f64 height;
+    f64 radius;
+    point3 bottom_center;
+    point3 top_center;
+    circle bottom_circle;
+    circle top_circle;
+} cylinder;
+
+bool cylinder_hit(hittable* cylinder_object,
+                  ray* r_in,
+                  interval r_t,
+                  hit_record* out_record);
+
+INLINE cylinder cylinder_create(point3 cylinder_bottom_center,
+                                vec3 cylinder_direction,
+                                f64 cylinder_height,
+                                f64 cylinder_radius,
+                                material* mat) {
+    cylinder_direction = vec3_unit(cylinder_direction);
+    point3 cylinder_top_center = vec3_add(cylinder_bottom_center, vec3_mul_scalar(cylinder_height, cylinder_direction));
+    return (cylinder){
+        .base = {
+            .hit = cylinder_hit,
+            .box = aabb_expand(aabb_create(cylinder_bottom_center, cylinder_top_center), 2 * cylinder_radius),
+        },
+        .mat = mat,
+        .direction = cylinder_direction,
+        .height = cylinder_height,
+        .radius = cylinder_radius,
+        .bottom_center = cylinder_bottom_center,
+        .top_center = cylinder_top_center,
+        .bottom_circle = circle_create(cylinder_bottom_center, cylinder_radius, vec3_mul_scalar(-1.0, cylinder_direction), mat),
+        .top_circle = circle_create(cylinder_top_center, cylinder_radius, cylinder_direction, mat),
+    };
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   ______   _______   ________  _______    ______   ________  ______   ______   __    __   ______   //
 //  /      \ /       \ /        |/       \  /      \ /        |/      | /      \ /  \  /  | /      \  //

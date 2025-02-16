@@ -18,8 +18,8 @@ typedef double f64;
 
 typedef _Bool bool;
 
-#define true 1;
-#define false 0;
+#define true 1
+#define false 0
 
 #define SET_BIT(index) (1 << (index))
 #define CHECK_BIT(val, index) ((1 << (index)) & (val)) != 0
@@ -45,6 +45,9 @@ typedef _Bool bool;
 #define IS_POWER_OF_2(val) ((bool)(((val) != 0) && ((val) & ((val) - 1)) == 0))
 #define DOUBLE_COMPARE(val_1, val_2) ((bool)(zfabs((val_1) - (val_2)) < DBL_EPSILON))
 #define NDC_TO_UNIT(val) (((val) + 1.0) * 0.5)
+
+#define _GLUE(a, b) a##b
+#define GLUE(a, b) _GLUE(a, b)
 
 #ifdef PLATFORM_WINDOWS
 typedef struct _iobuf FILE;

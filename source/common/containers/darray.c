@@ -18,146 +18,138 @@
 //                                                             //
 /////////////////////////////////////////////////////////////////
 
-void* darray_resize(void* array);
+// TODO: add shrink_to_fit
 
-void* _darray_create(u64 length, u64 stride) {
+#define DARRAY_GET_BLOCK(array) ((u64*)array - DARRAY_FIELD_MAX)
+#define DARRAY_HEADER_SIZE sizeof(u64) * DARRAY_FIELD_MAX
 
-    if (length == 0) {
-        LOGW("_darray_create : length provided is zero");
+void* _darray_create(u64 length, u64 stride, const char* file, i32 line) {
+    if (!length || !stride) {
+        LOGE("_darray_create: invalid params");
+        return 0;
     }
-
-    if (stride == 0) {
-        LOGW("_darray_create : stride provided is zero");
-    }
-
-    u64 total_size = sizeof(u64) * DARRAY_FIELD_MAX + length * stride;
-    u64* temp = (u64*)zmemory_allocate(total_size);
-    temp[DARRAY_FIELD_CAPACITY] = length;
-    temp[DARRAY_FIELD_STRIDE] = stride;
-    temp[DARRAY_FIELD_LENGTH] = 0;
-
-    return (void*)(temp + DARRAY_FIELD_MAX);
+    u64 total = DARRAY_HEADER_SIZE + length * stride;
+    u64* block = zmemory_allocate(total);
+    block[DARRAY_FIELD_LENGTH] = 0;
+    block[DARRAY_FIELD_STRIDE] = stride;
+    block[DARRAY_FIELD_CAPACITY] = length;
+    return block + DARRAY_FIELD_MAX;
 }
 
 void darray_destroy(void* array) {
-
-    u64* temp = (u64*)array - DARRAY_FIELD_MAX;
-    u64 total_size = sizeof(u64) * DARRAY_FIELD_MAX + temp[DARRAY_FIELD_CAPACITY] * temp[DARRAY_FIELD_STRIDE];
-
-    zmemory_free(temp, total_size);
-}
-
-u64 _darray_get_field(void* array, darray_field field) {
-    u64* temp = (u64*)array - DARRAY_FIELD_MAX;
-    return temp[field];
-}
-
-void _darray_set_field(void* array, u64 value, darray_field field) {
-    u64* temp = (u64*)array - DARRAY_FIELD_MAX;
-    temp[field] = value;
-}
-
-void* _darray_push_back(void* array, const void* data) {
-
-    u64 length = darray_size(array);
-    u64 stride = darray_stride(array);
-
-    if (length >= darray_capacity(array)) {
-        array = darray_resize(array);
+    if (!array) {
+        LOGE("darray_destroy: invalid params");
+        return;
     }
+    u64* block = DARRAY_GET_BLOCK(array);
+    zmemory_free(block, DARRAY_HEADER_SIZE + block[DARRAY_FIELD_CAPACITY] * block[DARRAY_FIELD_STRIDE]);
+}
 
-    u64 addr = (u64)array;
+u64 darray_field(void* array, darray_header field) {
+    if (!array || field >= DARRAY_FIELD_MAX) {
+        LOGE("darray_field: invalid params");
+        return 0;
+    }
+    u64* block = DARRAY_GET_BLOCK(array);
+    return block[field];
+}
 
-    zmemory_copy((void*)(addr + length * stride), data, stride);
+void* _darray_resize(void* array) {
+    if (!array) {
+        LOGE("darray_resize: invalid params");
+        return 0;
+    }
+    u64* block = DARRAY_GET_BLOCK(array);
+    u64 current_data_size = block[DARRAY_FIELD_STRIDE] * block[DARRAY_FIELD_CAPACITY];
+    u64 new_data_size = current_data_size * DARRAY_RESIZE_FACTOR;
+    // Realloc with both header and new data size
+    block = zmemory_reallocate(block, new_data_size, current_data_size);
+    block[DARRAY_FIELD_CAPACITY] *= DARRAY_RESIZE_FACTOR;
 
-    darray_set_length(array, length + 1);
+    return block ? (block + DARRAY_FIELD_MAX) : 0;
+}
 
+void* _darray_push_back(void* array, void* data) {
+    if (!array) {
+        LOGE("darray_push_back: invalid params");
+        return 0;
+    }
+    u64 length = darray_length(array);
+    u64 cap = darray_capacity(array);
+    if (length == cap) {
+        darray_resize(array);
+    }
+    u64* block = DARRAY_GET_BLOCK(array);
+    length = darray_length(array);
+    cap = darray_capacity(array);
+    zmemory_copy((void*)((u64)array + (block[DARRAY_FIELD_LENGTH] * block[DARRAY_FIELD_STRIDE])), data, block[DARRAY_FIELD_STRIDE]);
+    block[DARRAY_FIELD_LENGTH] += 1;
     return array;
 }
 
 void darray_pop_back(void* array) {
-
-    u64 length = darray_size(array);
-    if (length == 0) {
-        LOGE("darray_pop_back : no elements to pop");
+    if (!array) {
+        LOGE("darray_pop_back: invalid params");
         return;
     }
-    darray_set_length(array, length - 1);
+    u64* block = DARRAY_GET_BLOCK(array);
+    if (block[DARRAY_FIELD_LENGTH] == 0) {
+        LOGE("darray_pop_back: array is empty !");
+        return;
+    }
+    block[DARRAY_FIELD_LENGTH] -= 1;
 }
 
-void* _darray_insert(void* array, u64 index, const void* data) {
-
-    u64 length = darray_size(array);
-    u64 stride = darray_stride(array);
-
+void* _darray_insert(void* array, u64 index, void* data) {
+    if (!array) {
+        LOGE("darray_insert: invalid params");
+        return 0;
+    }
+    u64 length = darray_length(array);
+    u64 cap = darray_capacity(array);
     if (index >= length) {
-        LOGE("_darray_insert : index out of range");
+        LOGE("darray_insert: index out of bounds");
+        return array;
     }
-
-    if (length >= darray_capacity(array)) {
-        array = darray_resize(array);
+    if (length == cap) {
+        darray_resize(array);
     }
-
+    u64* block = DARRAY_GET_BLOCK(array);
+    u64 stride = block[DARRAY_FIELD_STRIDE];
     u64 addr = (u64)array;
-
     zmemory_move((void*)(addr + (index + 1) * stride),
                  (void*)(addr + index * stride),
-                 (length - index) * stride);
-
+                 (block[DARRAY_FIELD_LENGTH] - index - 1) * stride);
     zmemory_copy((void*)(addr + index * stride), data, stride);
-
-    darray_set_length(array, length + 1);
-
+    block[DARRAY_FIELD_LENGTH] += 1;
     return array;
 }
 
 void darray_remove(void* array, u64 index) {
-
-    u64 length = darray_size(array);
-    u64 stride = darray_stride(array);
-
-    if (index >= length) {
-        LOGE("_darray_insert : index out of range");
+    if (!array) {
+        LOGE("darray_remove: invalid params");
+        return;
     }
-
+    u64* block = DARRAY_GET_BLOCK(array);
+    if (index >= block[DARRAY_FIELD_LENGTH]) {
+        LOGE("darray_remove: index out of bounds");
+        return;
+    }
+    u64 stride = block[DARRAY_FIELD_STRIDE];
     u64 addr = (u64)array;
-
-    if (index != length - 1) {
-
+    if (index != block[DARRAY_FIELD_LENGTH] - 1) {
         zmemory_move((void*)(addr + index * stride),
                      (void*)(addr + (index + 1) * stride),
-                     (length - index - 1) * stride);
+                     (block[DARRAY_FIELD_LENGTH] - index - 1) * stride);
     }
-
-    darray_set_length(array, length - 1);
+    block[DARRAY_FIELD_LENGTH] -= 1;
 }
 
-//////////////////////////////////////////////////////////////////////
-//  __                  __                                          //
-// /  |                /  |                                         //
-// $$ |____    ______  $$ |  ______    ______    ______    _______  //
-// $$      \  /      \ $$ | /      \  /      \  /      \  /       | //
-// $$$$$$$  |/$$$$$$  |$$ |/$$$$$$  |/$$$$$$  |/$$$$$$  |/$$$$$$$/  //
-// $$ |  $$ |$$    $$ |$$ |$$ |  $$ |$$    $$ |$$ |  $$/ $$      \  //
-// $$ |  $$ |$$$$$$$$/ $$ |$$ |__$$ |$$$$$$$$/ $$ |       $$$$$$  | //
-// $$ |  $$ |$$       |$$ |$$    $$/ $$       |$$ |      /     $$/  //
-// $$/   $$/  $$$$$$$/ $$/ $$$$$$$/   $$$$$$$/ $$/       $$$$$$$/   //
-//                         $$ |                                     //
-//                         $$ |                                     //
-//                         $$/                                      //
-//                                                                  //
-//////////////////////////////////////////////////////////////////////
-
-void* darray_resize(void* array) {
-
-    u64 length = darray_size(array);
-    u64 stride = darray_stride(array);
-
-    void* temp = _darray_create(DARRAY_RESIZE_FACTOR * darray_capacity(array), stride);
-
-    zmemory_copy(temp, array, length * stride);
-    darray_set_length(temp, length);
-
-    darray_destroy(array);
-    return temp;
+void darray_clear(void* array) {
+    if (!array) {
+        LOGE("darray_clear: invalid params");
+        return;
+    }
+    u64* block = DARRAY_GET_BLOCK(array);
+    block[DARRAY_FIELD_LENGTH] = 0;
 }

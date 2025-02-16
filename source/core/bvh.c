@@ -33,7 +33,7 @@ hittable* bvh_create(hittable** darray) {
         return 0;
     }
 
-    return create_bvh(darray, 0, darray_size(darray));
+    return create_bvh(darray, 0, darray_length(darray));
 }
 
 void bvh_destroy(hittable* bvh) {

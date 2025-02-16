@@ -72,7 +72,7 @@ case "$1" in
         echo "  clear_bin"
         echo "  clear_bin_int"
         echo "  info"
-        echo "  run"
+        echo "  render"
         exit 1
         ;;
 esac

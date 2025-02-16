@@ -55,25 +55,25 @@ color image_texture_value(texture* tex, point3 point, f64 u, f64 v) {
     f64 v_frac = y - y0;
 
     i32 f00_idx = (x0 + y0 * image_tex->width) * image_tex->bytes_per_pixel;
+    i32 f10_idx = (x1 + y0 * image_tex->width) * image_tex->bytes_per_pixel;
+    i32 f11_idx = (x1 + y1 * image_tex->width) * image_tex->bytes_per_pixel;
+    i32 f01_idx = (x0 + y1 * image_tex->width) * image_tex->bytes_per_pixel;
+
     color f00 = {
         .x = image_tex->data[f00_idx + 0],
         .y = image_tex->data[f00_idx + 1],
         .z = image_tex->data[f00_idx + 2],
     };
-
-    i32 f10_idx = (x1 + y0 * image_tex->width) * image_tex->bytes_per_pixel;
     color f10 = {
         .x = image_tex->data[f10_idx + 0],
         .y = image_tex->data[f10_idx + 1],
         .z = image_tex->data[f10_idx + 2],
     };
-    i32 f11_idx = (x1 + y1 * image_tex->width) * image_tex->bytes_per_pixel;
     color f11 = {
         .x = image_tex->data[f11_idx + 0],
         .y = image_tex->data[f11_idx + 1],
         .z = image_tex->data[f11_idx + 2],
     };
-    i32 f01_idx = (x0 + y1 * image_tex->width) * image_tex->bytes_per_pixel;
     color f01 = {
         .x = image_tex->data[f01_idx + 0],
         .y = image_tex->data[f01_idx + 1],

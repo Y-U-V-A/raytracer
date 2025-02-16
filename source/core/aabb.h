@@ -21,6 +21,13 @@ INLINE void aabb_pad_to_minimums(aabb* box) {
         interval_expand(box->z_range, delta);
 }
 
+INLINE aabb aabb_expand(aabb box, f64 val) {
+    interval_expand(box.x_range, val);
+    interval_expand(box.y_range, val);
+    interval_expand(box.z_range, val);
+    return box;
+}
+
 INLINE aabb aabb_create(point3 point1, point3 point2) {
     aabb temp = (aabb){(point1.x < point2.x ? (interval){point1.x, point2.x} : (interval){point2.x, point1.x}),
                        (point1.y < point2.y ? (interval){point1.y, point2.y} : (interval){point2.y, point1.y}),

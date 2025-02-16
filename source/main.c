@@ -8,11 +8,11 @@ int main(const int argc, const char** argv) {
     }
 
     zmemory_init();
-    zmemory_log();
+
     random_seed();
+    render_scene(file_name);
 
-    scene_render(file_name);
-
-    zmemory_log();
     zmemory_destroy();
+
+    return 0;
 }

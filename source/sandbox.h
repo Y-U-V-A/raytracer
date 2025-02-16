@@ -661,8 +661,101 @@ void scene_cornell(const char* image_name) {
     darray_destroy(world_array);
 }
 
-void scene_render(const char* file_name) {
-    scene_three_lambertian_spheres(file_name);
+void scene_three_lambertian_cylinders(const char* image_name) {
+
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
+    perlin_texture* perlin_tex = perlin_texture_create();
+
+    lambertian ground_mat = lambertian_create((color){1, 1, 1}, (texture*)perlin_tex);
+    lambertian left_mat = lambertian_create((color){0.0, 0.5, 0.8}, 0);
+    lambertian center_mat = lambertian_create((color){1.0, 1.0, 1.0}, (texture*)(image_tex));
+    lambertian right_mat = lambertian_create((color){0.0, 0.5, 0.8}, (texture*)(image_tex));
+
+    sphere ground = sphere_create((point3){0, -1000, 0}, 1000, (material*)(&ground_mat));
+    cylinder cylinder_object = cylinder_create((point3){0.0, 0.0, 0.0}, (vec3){0.2, 0.2, 0.2}, 0.5, 0.3, 0);
+    translate left = translate_object((hittable*)(&cylinder_object), (vec3){-1.0, 0.5, 0.0}, (material*)(&left_mat));
+    translate center = translate_object((hittable*)(&cylinder_object), (vec3){0.0, 0.5, 0.0}, (material*)(&center_mat));
+    translate right = translate_object((hittable*)(&cylinder_object), (vec3){1.0, 0.5, 0.0}, (material*)(&right_mat));
+
+    hittable_list* world = hittable_list_create();
+    hittable_list_add(world, (hittable*)(&ground));
+    hittable_list_add(world, (hittable*)(&left));
+    hittable_list_add(world, (hittable*)(&center));
+    hittable_list_add(world, (hittable*)(&right));
+
+    camera* cam = camera_create(1000, 600);
+    camera_render(cam, world, image_name, 45, (vec3){0, 0.5, 5}, (vec3){0, 0.3, 0}, (vec3){0, 1, 0}, 256, 64, background_default);
+
+    camera_destroy(cam);
+    hittable_list_destroy(world);
+    perlin_texture_destroy(perlin_tex);
+    image_texture_destroy(image_tex);
+}
+
+void scene_three_metal_cylinders(const char* image_name) {
+
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
+    perlin_texture* perlin_tex = perlin_texture_create();
+
+    metal ground_mat = metal_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex, 0.0);
+    metal left_mat = metal_create((color){0., 0.5, 0.8}, 0, 0);
+    metal center_mat = metal_create((color){1.0, 1.0, 1.0}, (texture*)(image_tex), 0);
+    metal right_mat = metal_create((color){0.0, 0.5, 0.8}, (texture*)(image_tex), 0);
+
+    sphere ground = sphere_create((point3){0, -1000, 0}, 1000, (material*)(&ground_mat));
+    cylinder cylinder_object = cylinder_create((point3){0.0, 0.0, 0.0}, (vec3){0.2, 0.2, 0.2}, 0.8, 0.3, 0);
+    translate left = translate_object((hittable*)(&cylinder_object), (vec3){-1.0, 0.5, 0.0}, (material*)(&left_mat));
+    translate center = translate_object((hittable*)(&cylinder_object), (vec3){0.0, 0.5, 0.0}, (material*)(&center_mat));
+    translate right = translate_object((hittable*)(&cylinder_object), (vec3){1.0, 0.5, 0.0}, (material*)(&right_mat));
+
+    hittable_list* world = hittable_list_create();
+    hittable_list_add(world, (hittable*)(&ground));
+    hittable_list_add(world, (hittable*)(&left));
+    hittable_list_add(world, (hittable*)(&center));
+    hittable_list_add(world, (hittable*)(&right));
+
+    camera* cam = camera_create(1000, 600);
+    camera_render(cam, world, image_name, 45, (vec3){0, 0.5, 5}, (vec3){0, 0.3, 0}, (vec3){0, 1, 0}, 256, 64, background_default);
+
+    camera_destroy(cam);
+    hittable_list_destroy(world);
+    perlin_texture_destroy(perlin_tex);
+    image_texture_destroy(image_tex);
+}
+
+void scene_three_dielectric_cylinders(const char* image_name) {
+
+    image_texture* image_tex = image_texture_create("C:/yuva/repos/raytracer/source/assets/Buddha.jpg");
+    perlin_texture* perlin_tex = perlin_texture_create();
+
+    lambertian ground_mat = lambertian_create((color){0.5, 0.5, 0.5}, (texture*)perlin_tex);
+    dielectric left_mat = dielectric_create((color){1, 1, 1}, 0, 1.5);
+    dielectric center_mat = dielectric_create((color){1.0, 1.0, 1.0}, (texture*)(image_tex), 1.5);
+    dielectric right_mat = dielectric_create((color){0.0, 0.5, 0.8}, (texture*)(image_tex), 1.5);
+
+    sphere ground = sphere_create((point3){0, -1000, 0}, 1000, (material*)(&ground_mat));
+    cylinder cylinder_object = cylinder_create((point3){0.0, 0.0, 0.0}, (vec3){0.2, 0.2, 0.2}, 0.8, 0.3, 0);
+    translate left = translate_object((hittable*)(&cylinder_object), (vec3){-1.0, 0.5, 0.0}, (material*)(&left_mat));
+    translate center = translate_object((hittable*)(&cylinder_object), (vec3){0.0, 0.5, 0.0}, (material*)(&left_mat));
+    translate right = translate_object((hittable*)(&cylinder_object), (vec3){1.0, 0.5, 0.0}, (material*)(&left_mat));
+
+    hittable_list* world = hittable_list_create();
+    hittable_list_add(world, (hittable*)(&ground));
+    hittable_list_add(world, (hittable*)(&left));
+    hittable_list_add(world, (hittable*)(&center));
+    hittable_list_add(world, (hittable*)(&right));
+
+    camera* cam = camera_create(1000, 600);
+    camera_render(cam, world, image_name, 45, (vec3){0, 0.5, 5}, (vec3){0, 0.3, 0}, (vec3){0, 1, 0}, 256, 64, background_default);
+
+    camera_destroy(cam);
+    hittable_list_destroy(world);
+    perlin_texture_destroy(perlin_tex);
+    image_texture_destroy(image_tex);
+}
+
+void render_scene(const char* file_name) {
+    // scene_three_lambertian_spheres(file_name);
     // scene_three_metal_spheres(file_name);
     // scene_three_dielectric_spheres(file_name);
     // scene_three_lambertian_quad(file_name);
@@ -674,6 +767,9 @@ void scene_render(const char* file_name) {
     // scene_lights(file_name);
     // scene_cornell(file_name);
     // scene(file_name);
+    // scene_three_lambertian_cylinders(file_name);
+    // scene_three_metal_cylinders(file_name);
+    scene_three_dielectric_cylinders(file_name);
 }
 
 #endif

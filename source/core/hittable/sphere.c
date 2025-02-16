@@ -37,14 +37,14 @@ bool sphere_hit(hittable* sphere_object, ray* r_in, interval r_t, hit_record* ou
         }
     }
     vec3 point = ray_at(r_in, root);
-    vec3 outward_normal = vec3_mul_scalar((1.0f / object->radius), vec3_sub(point, object->center)); // normalize the normal
+    vec3 outward_normal = vec3_mul_scalar((1.0 / object->radius), vec3_sub(point, object->center)); // normalize the normal
     f32 hori_angle = zacos(-outward_normal.y);
     f32 vert_angle = zatan2(outward_normal.z, outward_normal.x) + PI;
 
     out_record->t = root;
     out_record->point = point;
     out_record->mat = object->mat;
-    out_record->u = vert_angle / (PI * 2.0f);
+    out_record->u = vert_angle / (PI * 2.0);
     out_record->v = hori_angle / PI;
     hit_record_set_face_normal(out_record, r_in, outward_normal);
     return true;

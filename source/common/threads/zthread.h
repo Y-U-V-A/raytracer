@@ -8,10 +8,12 @@ typedef struct zthread {
 } zthread;
 
 #ifdef PLATFORM_WINDOWS
-typedef u32 (*PFN_zthread_start_func)(void*);
+typedef unsigned long zthread_func_return_type;
 #else
-typedef void* (*PFN_zthread_start_func)(void*);
+typedef void* zthread_fun_return_type;
 #endif
+
+typedef zthread_func_return_type (*PFN_zthread_start_func)(void*);
 
 bool zthread_create(PFN_zthread_start_func func, void* params, zthread* out_thread);
 

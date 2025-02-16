@@ -188,8 +188,8 @@ void convert_ppm_to_bmp(const char* ppm_file, const char* bmp_file) {
         .biBitCount = 24,
         .biCompression = 0,
         .biSizeImage = height * row_size,
-        .biXPelsPerMeter = 2835, // 72 DPI
-        .biYPelsPerMeter = 2835, // 72 DPI
+        .biXPelsPerMeter = 0, // 0 DPI
+        .biYPelsPerMeter = 0, // 0 DPI
         .biClrUsed = 0,
         .biClrImportant = 0};
 
@@ -288,8 +288,8 @@ void convert_ppm_to_bmp(const char* ppm_file, const char* bmp_file) {
         .biBitCount = 24,
         .biCompression = 0,
         .biSizeImage = height * row_size,
-        .biXPelsPerMeter = 2835, // 72 DPI
-        .biYPelsPerMeter = 2835, // 72 DPI
+        .biXPelsPerMeter = 0, // 0 DPI
+        .biYPelsPerMeter = 0, // 0 DPI
         .biClrUsed = 0,
         .biClrImportant = 0};
 

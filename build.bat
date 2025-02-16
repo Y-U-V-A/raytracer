@@ -75,5 +75,5 @@ echo   clear
 echo   clear_bin
 echo   clear_bin_int
 echo   info
-echo   run
+echo   render
 exit /b 1

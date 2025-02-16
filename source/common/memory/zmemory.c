@@ -13,14 +13,13 @@ static zmemory_state* state_ptr;
 
 bool zmemory_init() {
     if (state_ptr) {
-        LOGE("zmemory_init: called too many times");
+        LOGE("zmemory_init: too many times");
         return false;
     }
-
     state_ptr = malloc(sizeof(zmemory_state));
     state_ptr->allocated_memory = 0;
     if (!zmutex_create(&state_ptr->mutex)) {
-        LOGE("zmemory_init: failed to create mutex");
+        LOGE("zmemory_init: mutex failed");
         return false;
     }
     return true;
@@ -28,6 +27,9 @@ bool zmemory_init() {
 
 void zmemory_destroy() {
     if (state_ptr) {
+        if (state_ptr->allocated_memory != 0) {
+            LOGE("MEMORY LEAK %llu bytes", state_ptr->allocated_memory);
+        }
         zmutex_destroy(&state_ptr->mutex);
         free(state_ptr);
         state_ptr = 0;
@@ -35,7 +37,7 @@ void zmemory_destroy() {
 }
 
 void* zmemory_allocate(u64 size) {
-    if (0 == size) {
+    if (!size) {
         LOGE("zmemory_allocate : invalid params");
         return 0;
     }
@@ -46,19 +48,36 @@ void* zmemory_allocate(u64 size) {
     state_ptr->allocated_memory += size;
     zmutex_unlock(&state_ptr->mutex);
 
-    if (0 == block) {
-        LOGE("zmemory_allocate : malloc failed to allocate");
+    if (!block) {
+        LOGE("zmemory_allocate : malloc failed");
         return 0;
     }
     return block;
 }
 
+void* zmemory_reallocate(void* block, u64 new_size, u64 old_size) {
+    if (!block || !new_size || !old_size) {
+        LOGE("zmemory_reallocate : invalid params");
+        return 0;
+    }
+
+    zmutex_lock(&state_ptr->mutex);
+    void* new_block = realloc(block, new_size);
+    state_ptr->allocated_memory -= old_size;
+    state_ptr->allocated_memory += new_size;
+    if (!new_block) {
+        LOGE("zmemory_allocate : realloc failed");
+        return block;
+    }
+    zmutex_unlock(&state_ptr->mutex);
+    return new_block;
+}
+
 void zmemory_free(void* block, u64 size) {
-    if (0 == block) {
+    if (!block) {
         LOGE("zmemory_free: invalid params");
         return;
     }
-
     zmutex_lock(&state_ptr->mutex);
     free(block);
     state_ptr->allocated_memory -= size;

@@ -9,6 +9,8 @@ void zmemory_destroy();
 
 void* zmemory_allocate(u64 size);
 
+void* zmemory_reallocate(void* block, u64 new_size, u64 old_size);
+
 void zmemory_free(void* block, u64 size);
 
 void* zmemory_set(void* block, i32 value, u64 size);
