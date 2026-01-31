@@ -4,7 +4,7 @@
 #include "geometry.h"
 
 struct surface_interaction{
-	color3f color;
+	color color;
 	normal3f normal;
 	point3f point;
 };

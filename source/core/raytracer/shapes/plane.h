@@ -7,19 +7,16 @@
 struct plane {
     struct shape base;
     normal3f normal;
-    point3f point;
+    point3f point_on_plane;
 };
 
-bool plane_hit(const struct shape* shape, const struct ray* ray, f64* tmin, struct surface_interaction* si);
+struct plane_make_info {
+    normal3f normal;
+    point3f point_on_plane;
+};
 
-INLINE struct plane plane_make(normal3f normal, point3f point) {
-    return (struct plane){
-        .base = {
-            .hit = plane_hit,
-        },
-        .normal = vec3f_normalize(normal),
-        .point = point,
-    };
-}
+bool plane_hit(const struct shape*, const struct ray*, f64* tmin, struct surface_interaction*);
+
+struct plane plane_make(struct plane_make_info*);
 
 #endif

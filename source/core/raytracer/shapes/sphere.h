@@ -10,16 +10,13 @@ struct sphere {
     point3f center;
 };
 
-bool sphere_hit(const struct shape* shape, const struct ray* ray, f64* tmin, struct surface_interaction* si);
+struct sphere_make_info {
+    f32 radius;
+    point3f center;
+};
 
-INLINE struct sphere sphere_make(f32 radius, point3f center) {
-    return (struct sphere){
-        .base = {
-            .hit = sphere_hit,
-        },
-        .radius = radius,
-        .center = center,
-    };
-}
+bool sphere_hit(const struct shape*, const struct ray*, f64* tmin, struct surface_interaction*);
+
+struct sphere sphere_make(struct sphere_make_info*);
 
 #endif

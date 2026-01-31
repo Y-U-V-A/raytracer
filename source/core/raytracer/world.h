@@ -1,20 +1,19 @@
 #ifndef WORLD__H
 #define WORLD__H
 
-#include "defines.h"
 #include "geometry.h"
 
+struct ray;
 struct world {
+    struct view_plane* view_plane;
+    struct camera* camera;
+    const char* output_filename;
     struct shape** shapes;
     i32 shapes_count;
-    i32 hres;
-    i32 vres;
-    f32 pixel_scale;
-    struct sampler*sampler;
-    const char*filename;
-
 };
 
-void world_render(const struct world* world, color3f background_color);
+void world_render_scene(const struct world*);
+
+color world_trace_ray(const struct world*, const struct ray*);
 
 #endif

@@ -35,4 +35,7 @@ typedef struct _IO_FILE FILE;
 extern f32 infinity;
 extern u64 memory;
 
+#define PI 3.1415926535897932384626433832795
+#define PI_OVER_4 0.78539816339744830961566084581988
+
 #endif
